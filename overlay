@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Overlay - MaloyCSer</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --a:#2de2d3;
+  --a2:#97fff6;
+  --t:#eefcfb;
+  --m:#bfd9d8;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:transparent;
+}
+
+body{
+  font-family:'Outfit',sans-serif;
+  color:var(--t);
+}
+
+#overlay{
+  position:fixed;
+  inset:0;
+  display:grid;
+  place-items:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .35s ease;
+}
+
+#overlay.active{
+  opacity:1;
+}
+
+#overlay::before{
+  content:"";
+  position:absolute;
+  inset:-28%;
+  z-index:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 22% 30%,rgba(45,226,211,.18),transparent 25%),
+    radial-gradient(circle at 78% 22%,rgba(151,255,246,.12),transparent 23%),
+    radial-gradient(circle at 50% 78%,rgba(45,226,211,.14),transparent 28%);
+  filter:blur(12px);
+  animation:overlayLiveBg 12s ease-in-out infinite alternate;
+}
+
+@keyframes overlayLiveBg{
+  0%{transform:translate3d(-2%,1%,0) rotate(0deg) scale(1)}
+  50%{transform:translate3d(2%,-2%,0) rotate(4deg) scale(1.06)}
+  100%{transform:translate3d(0,2%,0) rotate(-3deg) scale(1.03)}
+}
+
+#backdrop{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at center,rgba(18,36,38,.18),rgba(0,0,0,.56) 58%,rgba(0,0,0,.82));
+  backdrop-filter:blur(8px);
+}
+
+#canvas{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.shell{
+  position:relative;
+  z-index:2;
+  width:min(1320px,92vw);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:26px;
+}
+
+.reel{
+  position:relative;
+  width:100%;
+  height:190px;
+  overflow:hidden;
+  border-radius:34px;
+  border:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(180deg,rgba(8,18,19,.82),rgba(5,11,12,.88));
+  box-shadow:0 28px 110px rgba(0,0,0,.5);
+  animation:softReelGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes softReelGlow{
+  from{box-shadow:0 28px 110px rgba(0,0,0,.5),0 0 0 rgba(45,226,211,0)}
+  to{box-shadow:0 28px 110px rgba(0,0,0,.5),0 0 34px rgba(45,226,211,.13)}
+}
+
+.reel:before,
+.reel:after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:180px;
+  z-index:4;
+  pointer-events:none;
+}
+
+.reel:before{
+  left:0;
+  background:linear-gradient(90deg,rgba(5,11,12,1),rgba(5,11,12,0));
+}
+
+.reel:after{
+  right:0;
+  background:linear-gradient(270deg,rgba(5,11,12,1),rgba(5,11,12,0));
+}
+
+.center{
+  position:absolute;
+  left:50%;
+  top:14px;
+  bottom:14px;
+  transform:translateX(-50%);
+  width:320px;
+  z-index:5;
+  border-radius:28px;
+  border:1px solid rgba(151,255,246,.38);
+  box-shadow:
+    0 0 0 10px rgba(45,226,211,.045),
+    inset 0 0 0 1px rgba(151,255,246,.09),
+    0 0 38px rgba(45,226,211,.14);
+}
+
+.track{
+  position:absolute;
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  align-items:center;
+  gap:18px;
+  padding:0 24px;
+  will-change:transform;
+}
+
+.card{
+  width:270px;
+  height:130px;
+  flex:0 0 auto;
+  border-radius:28px;
+  display:grid;
+  place-items:center;
+  padding:14px 18px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.07);
+  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease,opacity .2s ease;
+}
+
+.card .name{
+  font-family:'Outfit',sans-serif;
+  font-size:28px;
+  font-weight:700;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.card.winner-card{
+  border-color:rgba(151,255,246,.28);
+  box-shadow:0 0 24px rgba(45,226,211,.08);
+}
+
+.result{
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:center;
+}
+
+#winner{
+  font-family:'Outfit',sans-serif;
+  font-size:64px;
+  font-weight:700;
+  letter-spacing:-.03em;
+  color:var(--a2);
+  text-shadow:0 0 26px rgba(45,226,211,.2);
+}
+
+#subtitle{
+  font-size:24px;
+  font-weight:800;
+}
+
+#congrats{
+  font-size:16px;
+  color:var(--m);
+}
+
+.flash{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:440px;
+  height:440px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(151,255,246,.18),rgba(45,226,211,.06),transparent 70%);
+  filter:blur(14px);
+  opacity:0;
+  pointer-events:none;
+  z-index:1;
+}
+
+.flash.active{
+  animation:flash .9s ease forwards;
+}
+
+@keyframes flash{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}
+  40%{opacity:1}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.15)}
+}
+
+@media(max-width:900px){
+  .shell{width:95vw}
+  .reel{height:156px}
+  .center{width:220px}
+  .card{width:190px;height:100px}
+  .card .name{font-size:20px}
+  #winner{font-size:38px}
+  #subtitle{font-size:18px}
+}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<div id="overlay">
+  <div id="backdrop"></div>
+
+  <div class="shell">
+    <div class="reel" id="reel">
+      <div class="flash" id="flash"></div>
+      <div class="center"></div>
+      <div class="track" id="track"></div>
+    </div>
+
+    <div class="result">
+      <div id="winner">-</div>
+      <div id="subtitle">Рулетка выбирает победителя</div>
+      <div id="congrats">Поздравляем с победой!</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDnukptn6s7DLvbv6NgqlNyeMI8lL_5lYo",
+  authDomain: "lottobot-5a025.firebaseapp.com",
+  databaseURL: "https://lottobot-5a025-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lottobot-5a025",
+  storageBucket: "lottobot-5a025.firebasestorage.app",
+  messagingSenderId: "604545090105",
+  appId: "1:604545090105:web:53a21ad7b3fb1b46d8c3e8"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const ROOM = new URLSearchParams(location.search).get('room') || 'maloycser';
+const db = firebase.database();
+const overlayEventRef = db.ref('overlayEvents/' + ROOM + '/latest');
+
+const SPIN = 3600;
+const HOLD = 2600;
+
+let spinRAF = null;
+let hold = null;
+let particles = [];
+let pRAF = null;
+
+const overlay = document.getElementById('overlay');
+const track = document.getElementById('track');
+const reel = document.getElementById('reel');
+const winnerEl = document.getElementById('winner');
+const subtitle = document.getElementById('subtitle');
+const flash = document.getElementById('flash');
+
+const bc = ('BroadcastChannel' in window) ? new BroadcastChannel('lotto_maloycser_channel') : null;
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+function resize(){
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+}
+addEventListener('resize', resize);
+resize();
+
+function ease(x){
+  return 1 - Math.pow(1 - x, 4);
+}
+
+function cancel(){
+  if(spinRAF) cancelAnimationFrame(spinRAF);
+  if(hold) clearTimeout(hold);
+  spinRAF = null;
+  hold = null;
+}
+
+function pickRandom(arr){
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/*
+  ВАЖНО:
+  Победитель теперь НЕ последний элемент.
+  Он ставится в середину длинной ленты,
+  а после него ещё идут другие ники.
+*/
+function build(pool, winner){
+  const source = (Array.isArray(pool) && pool.length ? pool : [winner]).filter(Boolean);
+
+  const items = [];
+  const beforeCount = 28;
+  const afterCount = 28;
+
+  for(let i = 0; i < beforeCount; i++){
+    items.push(pickRandom(source));
+  }
+
+  const winnerIndex = items.length;
+  items.push(winner);
+
+  for(let i = 0; i < afterCount; i++){
+    items.push(pickRandom(source));
+  }
+
+  return { items, winnerIndex };
+}
+
+function create(items, winnerIndex){
+  track.innerHTML = '';
+
+  const frag = document.createDocumentFragment();
+
+  items.forEach((name, index) => {
+    const c = document.createElement('div');
+    c.className = 'card' + (index === winnerIndex ? ' winner-card' : '');
+
+    const d = document.createElement('div');
+    d.className = 'name';
+    d.textContent = name;
+
+    c.appendChild(d);
+    frag.appendChild(c);
+  });
+
+  track.appendChild(frag);
+}
+
+function show(winner, pool){
+  cancel();
+
+  overlay.classList.add('active');
+  winnerEl.textContent = '...';
+  subtitle.textContent = 'Рулетка выбирает победителя';
+
+  const built = build(pool, winner);
+  create(built.items, built.winnerIndex);
+
+  const cards = [...track.children];
+  const target = cards[built.winnerIndex];
+
+  const startX = 80;
+  const targetX = (reel.clientWidth / 2) - (target.offsetLeft + target.offsetWidth / 2);
+
+  let start = null;
+
+  function step(ts){
+    if(!start) start = ts;
+
+    const pr = Math.min((ts - start) / SPIN, 1);
+    const x = startX + (targetX - startX) * ease(pr);
+
+    track.style.transform = 'translateY(-50%) translateX(' + x + 'px)';
+
+    if(pr < 1){
+      spinRAF = requestAnimationFrame(step);
+    }else{
+      winnerEl.textContent = winner;
+      subtitle.textContent = '🎉 Победитель розыгрыша!';
+      flash.classList.remove('active');
+      void flash.offsetWidth;
+      flash.classList.add('active');
+      burst();
+      setTimeout(burst, 220);
+      hold = setTimeout(hide, HOLD);
+    }
+  }
+
+  spinRAF = requestAnimationFrame(step);
+}
+
+function hide(){
+  cancel();
+  overlay.classList.remove('active');
+
+  setTimeout(() => {
+    track.innerHTML = '';
+    winnerEl.textContent = '-';
+    subtitle.textContent = 'Рулетка выбирает победителя';
+  }, 320);
+}
+
+function burst(){
+  const colors = ['#2de2d3','#97fff6','#fff','#d8fffb'];
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+
+  for(let i = 0; i < 100; i++){
+    const a = Math.random() * Math.PI * 2;
+    const s = 2 + Math.random() * 8;
+
+    particles.push({
+      x: cx,
+      y: cy,
+      vx: Math.cos(a) * s,
+      vy: Math.sin(a) * s - 3,
+      size: 2 + Math.random() * 5,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      life: 1,
+      decay: .012 + Math.random() * .018,
+      rot: Math.random() * Math.PI * 2,
+      vr: (Math.random() - .5) * .3,
+      sq: Math.random() > .45
+    });
+  }
+
+  if(!pRAF) loop();
+}
+
+function loop(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles = particles.filter(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += .12;
+    p.vx *= .992;
+    p.life -= p.decay;
+    p.rot += p.vr;
+
+    if(p.life <= 0) return false;
+
+    ctx.save();
+    ctx.globalAlpha = p.life;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.fillStyle = p.color;
+
+    if(p.sq){
+      ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+    }else{
+      ctx.beginPath();
+      ctx.arc(0, 0, p.size/2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+    return true;
+  });
+
+  if(particles.length){
+    pRAF = requestAnimationFrame(loop);
+  }else{
+    pRAF = null;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+}
+
+function receive(d){
+  if(d && d.type === 'pick'){
+    show(d.winner, d.pool || []);
+  }
+}
+
+let firebaseInitialLoaded = false;
+let lastFirebaseEventKey = '';
+
+overlayEventRef.on('value', snap => {
+  const event = snap.val();
+
+  if(!event) return;
+
+  const eventKey = String(event.time || '') + ':' + String(event.nonce || '');
+
+  if(!firebaseInitialLoaded){
+    firebaseInitialLoaded = true;
+    lastFirebaseEventKey = eventKey;
+    return;
+  }
+
+  if(eventKey === lastFirebaseEventKey) return;
+
+  lastFirebaseEventKey = eventKey;
+  receive(event);
+});
+
+addEventListener('message', e => receive(e.data));
+
+addEventListener('storage', e => {
+  if(e.key === 'lotto_maloycser_overlay_event' && e.newValue){
+    try{
+      receive(JSON.parse(e.newValue));
+    }catch{}
+  }
+});
+
+if(bc){
+  bc.addEventListener('message', e => receive(e.data));
+}
+
+const q = new URLSearchParams(location.search);
+if(q.get('test')){
+  setTimeout(() => {
+    show('magicgt_maloycser', [
+      'magicgt_maloycser',
+      'turbofox',
+      'shadow',
+      'neonrider',
+      'cybercat',
+      'nightwolf',
+      'pixelduck',
+      'stormx',
+      'ultramax'
+    ]);
+  }, 300);
+}
+</script>
+</body>
+</html>
