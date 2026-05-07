@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Лотто-Бот MaloyCSer</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--a:#2de2d3;--a2:#97fff6;--bg:#0c0f0f;--card:rgba(17,22,22,.78);--card2:rgba(20,26,26,.78);--l:rgba(255,255,255,.06);--l2:rgba(255,255,255,.11);--t:#e8f7f5;--m:#6b8a88;--d:#ff7690;--r:18px}
+html,body{height:100%;overflow:hidden;background:#070b0c}
+body{font-family:'Outfit',sans-serif;color:var(--t);position:relative;isolation:isolate}
+body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.045) 2px,rgba(0,0,0,.045) 4px);pointer-events:none;z-index:9999}
+body::after{content:"";position:fixed;inset:-35%;z-index:0;pointer-events:none;background:radial-gradient(circle at 18% 22%,rgba(45,226,211,.18),transparent 28%),radial-gradient(circle at 82% 18%,rgba(151,255,246,.11),transparent 24%),radial-gradient(circle at 48% 84%,rgba(45,226,211,.13),transparent 30%),linear-gradient(135deg,#070b0c,#0b1111 42%,#061312);filter:blur(2px) saturate(1.12);animation:liveBackground 18s ease-in-out infinite alternate}
+@keyframes liveBackground{0%{transform:translate3d(-2%,0,0) rotate(0deg) scale(1)}50%{transform:translate3d(2%,-2%,0) rotate(3deg) scale(1.06)}100%{transform:translate3d(0,2%,0) rotate(-2deg) scale(1.03)}}
+.app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;background:transparent}
+.top{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--l);background:rgba(13,17,17,.76);backdrop-filter:blur(18px);flex-shrink:0}
+.brand{display:flex;align-items:center;gap:12px}
+.mark{width:40px;height:40px;border-radius:12px;overflow:hidden;border:1px solid rgba(45,226,211,.25);flex-shrink:0;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,var(--a2),var(--a) 38%,#0d3433 72%);box-shadow:0 0 26px rgba(45,226,211,.16)}
+.mark span{font-size:18px;font-weight:900;color:#061312}
+.brand-text h1{font-size:18px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.brand-text h1 span{color:var(--a)}
+.brand-text .sub{font-size:11px;color:var(--m);margin-top:2px}
+.tools{display:flex;gap:8px;align-items:center}
+.pill{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;background:rgba(17,22,22,.78);border:1px solid var(--l);color:var(--m);font-size:11px;font-weight:700}
+.dot{width:7px;height:7px;border-radius:50%;background:#2e4a48}
+.dot.live{background:var(--a);animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(45,226,211,.5)}70%{box-shadow:0 0 0 8px rgba(45,226,211,0)}100%{box-shadow:0 0 0 0 rgba(45,226,211,0)}}
+.mono{font-family:"JetBrains Mono",monospace}
+.icon-btn{appearance:none;border:none;cursor:pointer;min-height:32px;padding:0 11px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:7px;background:rgba(45,226,211,.08);border:1px solid rgba(45,226,211,.18);color:var(--a2);font-size:11px;font-weight:800;font-family:'Outfit',sans-serif;transition:.16s ease}
+.icon-btn:hover{background:rgba(45,226,211,.14);border-color:rgba(45,226,211,.32);transform:translateY(-1px)}
+.icon-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.main{display:grid;grid-template-columns:1fr .85fr 1.5fr .95fr;gap:10px;padding:10px;flex:1;min-height:0;overflow:hidden}
+.panel{position:relative;display:flex;flex-direction:column;background:var(--card);backdrop-filter:blur(18px);border:1px solid var(--l);border-radius:var(--r);overflow:hidden;min-height:0;box-shadow:0 18px 60px rgba(0,0,0,.18)}
+.panel::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(135deg,rgba(45,226,211,.055),transparent 34%,rgba(151,255,246,.035));opacity:.9}
+.panel>*{position:relative;z-index:1}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--l);flex-shrink:0}
+.ph-left{display:flex;align-items:center;gap:10px}
+.ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(45,226,211,.07);border:1px solid rgba(45,226,211,.15);color:var(--a);flex-shrink:0}
+.ico svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ph-title{font-size:13px;font-weight:800;letter-spacing:-.01em}
+.ph-sub{font-size:11px;color:var(--m);margin-top:2px;line-height:1.4}
+.ph-right{display:flex;align-items:center;gap:6px}
+.badge{height:26px;min-width:26px;padding:0 8px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:var(--a);font-size:11px;font-weight:800;background:rgba(45,226,211,.07);border:1px solid rgba(45,226,211,.2)}
+.scroll{flex:1;overflow:auto;padding:10px}
+.scroll::-webkit-scrollbar,.chat::-webkit-scrollbar{width:4px}
+.scroll::-webkit-scrollbar-thumb,.chat::-webkit-scrollbar-thumb{border-radius:999px;background:rgba(255,255,255,.07)}
+.list{display:flex;flex-direction:column;gap:7px}
+.item,.win{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--card2);border:1px solid var(--l);transition:.15s}
+.item:hover,.win:hover{border-color:var(--l2)}
+.ii,.wi{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:var(--a);font-weight:800;font-size:12px;background:rgba(45,226,211,.07);border:1px solid rgba(45,226,211,.15);flex-shrink:0}
+.im,.wm{flex:1;min-width:0}
+.name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{font-size:11px;color:var(--m);margin-top:2px}
+.ticket{white-space:nowrap;font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;padding:5px 9px;border-radius:8px;color:var(--m);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.ticket.lucky{color:var(--a2);background:rgba(45,226,211,.08);border-color:rgba(45,226,211,.2)}
+.empty{min-height:120px;display:grid;place-items:center;text-align:center;padding:20px;border:1px dashed rgba(255,255,255,.07);border-radius:12px;color:var(--m);font-size:12px;line-height:1.8}
+.actions{display:flex;gap:8px;padding:10px;border-top:1px solid var(--l);flex-shrink:0}
+.btn{appearance:none;border:none;cursor:pointer;height:36px;padding:0 14px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);border:1px solid var(--l);color:var(--t);font-size:12px;font-weight:700;transition:.15s;font-family:'Outfit',sans-serif}
+.btn:hover{background:rgba(255,255,255,.07);border-color:var(--l2)}
+.fill{flex:1}.accent{background:rgba(45,226,211,.12);border-color:rgba(45,226,211,.28);color:var(--a2)}
+.accent:hover{background:rgba(45,226,211,.18)}
+.danger{background:rgba(255,118,144,.05);border-color:rgba(255,118,144,.2);color:#ff9daf}
+.mini{height:28px;padding:0 10px;font-size:11px;border-radius:8px}
+.settings{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
+.setting{padding:12px;border-radius:12px;background:var(--card2);border:1px solid var(--l)}
+.label{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--m);margin-bottom:8px}
+.row{display:flex;gap:8px}
+.input{width:100%;height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--l);outline:none;background:#0a1010;color:var(--t);font-size:13px;font-family:'Outfit',sans-serif}
+.input:focus{border-color:rgba(45,226,211,.28)}
+input[type=range]{width:100%;accent-color:var(--a);cursor:pointer;margin:6px 0}
+.note{margin-top:8px;font-size:11px;color:var(--m);line-height:1.6}
+.note b{color:var(--a2)}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid var(--l)}
+.toggle-text{font-size:11px;color:var(--m);line-height:1.5}
+.switch{position:relative;width:44px;height:24px;flex-shrink:0}
+.switch input{display:none}
+.slider{position:absolute;inset:0;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.07);cursor:pointer}
+.slider:before{content:"";position:absolute;width:16px;height:16px;border-radius:50%;left:3px;top:3px;background:#4a6664;transition:.2s}
+.switch input:checked+.slider{background:rgba(45,226,211,.15);border-color:rgba(45,226,211,.25)}
+.switch input:checked+.slider:before{transform:translateX(20px);background:var(--a)}
+.chat-panel{display:flex;flex-direction:column}
+.chat-top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--l);flex-shrink:0}
+.chat-info{display:flex;align-items:center;gap:8px;color:var(--m);font-size:11px}
+.chat-info strong{color:var(--a2)}
+.chat{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:6px;min-height:0}
+.msg{padding:8px 10px;font-size:12px;line-height:1.55;word-break:break-word;border-radius:10px;background:var(--card2);border:1px solid var(--l)}
+.msg .n{font-weight:800;margin-right:5px}
+.msg .lk{color:var(--a2)}
+.msg .mod{color:#a6b1ff}
+.msg .sub{color:#72c0ff}
+.msg.sys{color:var(--m);font-size:11px;background:transparent;border-color:transparent}
+.kw{color:var(--a2);font-weight:800}
+.obs{display:flex;gap:14px;align-items:center;padding:10px 16px;border-top:1px solid var(--l);background:rgba(13,17,17,.76);backdrop-filter:blur(18px);flex-shrink:0}
+.obs-text{flex:1;min-width:0}
+.obs-text strong{display:block;font-size:12px;margin-bottom:3px}
+.obs-text span{display:block;font-size:11px;color:var(--m);line-height:1.5}
+.copylink{height:36px;min-width:320px;padding:0 14px;border-radius:10px;border:1px solid var(--l);background:#0a1010;color:var(--a2);font-family:"JetBrains Mono",monospace;font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;filter:blur(4px);opacity:.7;cursor:pointer;text-align:left;transition:.2s}
+.copylink:hover{filter:blur(3px);opacity:.85}
+.copylink.copied{filter:none;opacity:1;color:#eafffd}
+.hint{font-size:10px;color:#3a5250;margin-top:4px}
+body.focus-mode .main{grid-template-columns:minmax(0,1.55fr) minmax(300px,.85fr)}
+body.focus-mode .main>section:nth-child(1),body.focus-mode .main>section:nth-child(2){display:none}
+body.focus-mode .focus-btn{background:rgba(45,226,211,.2);border-color:rgba(151,255,246,.42);box-shadow:0 0 24px rgba(45,226,211,.12)}
+body.focus-mode .focus-btn .fs-label{color:#eafffd}
+body.focus-mode .brand-text .sub::after{content:" • фокус-режим";color:var(--a2)}
+@media(max-width:1300px){.main{grid-template-columns:1fr 1fr}}
+@media(max-width:860px){.main{grid-template-columns:1fr}.obs{flex-direction:column}.copylink{min-width:0;width:100%}.fs-label{display:none}body.focus-mode .main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="brand">
+      <div class="mark"><span>M</span></div>
+      <div class="brand-text">
+        <h1>Лотто-Бот <span>MaloyCSer</span></h1>
+        <div class="sub">Минималистичный чат-розыгрыш для одного стримера</div>
+      </div>
+    </div>
+    <div class="tools">
+      <button class="icon-btn focus-btn" id="focusBtn" type="button" onclick="toggleFocusMode()" aria-pressed="false" title="Полноэкранный режим: скрыть участников и настройки">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        <span class="fs-label">Фокус</span>
+      </button>
+      <div class="pill"><span class="dot" id="sdot"></span><span id="stxt">Подключение...</span></div>
+      <div class="pill mono" id="gid">GID --</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <section class="panel">
+      <div class="ph">
+        <div class="ph-left"><div class="ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div><div class="ph-title">Участники</div><div class="ph-sub">Список зрителей по кодовому слову</div></div></div>
+        <div class="ph-right"><div class="badge" id="ect">0</div><button class="btn mini" onclick="copyEntries()">Копировать</button></div>
+      </div>
+      <div class="scroll" id="elist"></div>
+      <div class="actions"><button class="btn danger fill" onclick="resetAll()">Сбросить</button><button class="btn fill" id="pauseBtn" onclick="togglePause()">Пауза</button><button class="btn fill" onclick="addDemoBots()">Демо</button></div>
+    </section>
+
+    <section class="panel">
+      <div class="ph">
+        <div class="ph-left"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div><div><div class="ph-title">Настройки</div><div class="ph-sub">Кодовое слово и бонус для ника с MaloyCSer</div></div></div>
+      </div>
+      <div class="settings">
+        <div class="setting"><div class="label">Кодовое слово</div><div class="row"><input class="input" id="kwi" type="text" placeholder="Введите кодовое слово"><button class="btn accent" onclick="updateKw()">Применить</button></div></div>
+        <div class="setting"><div class="label">Удача для ника</div><input type="range" min="1" max="8" step="1" value="2" id="luck" oninput="updateLuck(this.value)"><div class="note">Ники с <b>maloycser</b> получают <b id="lv">x2</b> билета.</div><div class="toggle"><div class="toggle-text">Показывать в чате вход по кодовому слову</div><label class="switch"><input type="checkbox" id="showJoin" checked onchange="S.showJoinMessages=this.checked"><span class="slider"></span></label></div></div>
+      </div>
+    </section>
+
+    <section class="panel chat-panel">
+      <div class="chat-top">
+        <div class="chat-info"><span class="dot" id="cdot"></span> Слушает слово <strong id="kwdisp">-</strong></div>
+      </div>
+      <div class="chat" id="chat"></div>
+      <div class="actions"><button class="btn fill" onclick="clearChat()">Очистить чат</button></div>
+    </section>
+
+    <section class="panel">
+      <div class="ph">
+        <div class="ph-left"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><div><div class="ph-title">Победители</div><div class="ph-sub">История выбранных участников</div></div></div>
+        <div class="ph-right"><div class="badge" id="wct">0</div><button class="btn mini" onclick="copyWinners()">Копировать</button></div>
+      </div>
+      <div class="scroll" id="wlist"></div>
+      <div class="actions"><button class="btn accent fill" onclick="pickWinner()">Выбрать победителя</button><button class="btn danger" onclick="clearWinners()">Очистить</button></div>
+    </section>
+  </div>
+
+  <div class="obs">
+    <div class="obs-text"><strong>OBS Overlay</strong><span>Нажмите на скрытую ссылку справа — она скопируется без всплывающих предупреждений.</span><div class="hint">Ссылка скрыта специально. Просто нажмите, чтобы скопировать.</div></div>
+    <button class="copylink" id="obsCopy" onclick="copyObsSilent()" title="Нажмите, чтобы скопировать ссылку"></button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDnukptn6s7DLvbv6NgqlNyeMI8lL_5lYo",
+  authDomain: "lottobot-5a025.firebaseapp.com",
+  databaseURL: "https://lottobot-5a025-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lottobot-5a025",
+  storageBucket: "lottobot-5a025.firebasestorage.app",
+  messagingSenderId: "604545090105",
+  appId: "1:604545090105:web:53a21ad7b3fb1b46d8c3e8"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const ROOM = new URLSearchParams(location.search).get('room') || 'maloycser';
+const db = firebase.database();
+const overlayEventRef = db.ref('overlayEvents/' + ROOM + '/latest');
+
+
+const CHANNEL=new URLSearchParams(location.search).get('channel')||'maloycser';
+const DEFAULT_KW='участвую';
+const S={entries:{},winners:[],kw:localStorage.getItem('lotto_kw')||DEFAULT_KW,luck:2,paused:false,showJoinMessages:true,picking:false,ws:null,reconnectTimer:null};
+const bc=('BroadcastChannel' in window)?new BroadcastChannel('lotto_maloycser_channel'):null;
+const overlayUrl = new URL(
+  'overlay.html?room=' + encodeURIComponent(ROOM),
+  location.href
+).href;
+document.getElementById('obsCopy').textContent=overlayUrl;
+document.getElementById('kwi').value=S.kw;
+document.getElementById('kwdisp').textContent=S.kw;
+document.getElementById('gid').textContent='@'+CHANNEL;
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+function esc(s){return String(s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+function msg(t){const d=document.createElement('div');d.className='msg sys';d.textContent=t;append(d);}
+function append(el){const c=document.getElementById('chat');c.appendChild(el);while(c.children.length>220)c.removeChild(c.firstChild);c.scrollTop=c.scrollHeight;}
+function lucky(n){return String(n).toLowerCase().includes('maloycser');}
+function setStatus(ok,text){document.getElementById('sdot').classList.toggle('live',ok);document.getElementById('cdot').classList.toggle('live',ok);document.getElementById('stxt').textContent=text;}
+function renderEntries(){const box=document.getElementById('elist'),names=Object.keys(S.entries);document.getElementById('ect').textContent=names.length;if(!names.length){box.innerHTML='<div class="empty">Пока нет участников.<br>Напишите кодовое слово в чат или нажмите «Демо».</div>';return;}box.innerHTML='<div class="list">'+names.map(function(n,i){const e=S.entries[n];return '<div class="item"><div class="ii">'+(i+1)+'</div><div class="im"><div class="name">'+esc(n)+'</div><div class="meta">'+(e.lucky?'Бонус MaloyCSer':'Обычный участник')+'</div></div><div class="ticket '+(e.lucky?'lucky':'')+'">x'+e.tickets+'</div></div>';}).join('')+'</div>';}
+function renderWinners(){const box=document.getElementById('wlist');document.getElementById('wct').textContent=S.winners.length;if(!S.winners.length){box.innerHTML='<div class="empty">Победителей пока нет.</div>';return;}box.innerHTML='<div class="list">'+S.winners.map(function(n,i){return '<div class="win"><div class="wi">'+(i+1)+'</div><div class="wm"><div class="name">'+esc(n)+'</div><div class="meta">Победитель розыгрыша</div></div></div>';}).join('')+'</div>';}
+function copyText(text){const value=String(text||'');if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(value).catch(function(){return fallbackCopy(value);});return fallbackCopy(value);}
+function fallbackCopy(text){return new Promise(function(resolve,reject){const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.left='-9999px';ta.style.top='0';document.body.appendChild(ta);ta.select();try{const ok=document.execCommand('copy');document.body.removeChild(ta);ok?resolve():reject(new Error('copy failed'));}catch(err){document.body.removeChild(ta);reject(err);}});}
+function register(n){if(S.paused||!n)return;const duplicate=Object.keys(S.entries).some(function(x){return x.toLowerCase()===String(n).toLowerCase();});if(duplicate)return;const isL=lucky(n),tickets=isL?S.luck:1;S.entries[n]={tickets:tickets,lucky:isL};renderEntries();if(S.showJoinMessages){const d=document.createElement('div');d.className='msg';d.innerHTML='<span class="n '+(isL?'lk':'')+'">'+esc(n)+'</span>вошёл в розыгрыш '+(tickets>1?'<span class="kw">x'+tickets+'</span> ':'')+'по слову <span class="kw">'+esc(S.kw)+'</span>';append(d);}}
+function processChat(name,text,badges){const isL=lucky(name);const d=document.createElement('div');d.className='msg';d.innerHTML='<span class="n '+(isL?'lk':'')+'">'+esc(name)+'</span>'+esc(text);append(d);if(String(text).toLowerCase().includes(S.kw.toLowerCase()))register(name);}
+function updateKw(){const input=document.getElementById('kwi'),v=input.value.trim();if(!v){msg('Введите кодовое слово перед применением');input.focus();return;}S.kw=v;localStorage.setItem('lotto_kw',v);document.getElementById('kwdisp').textContent=v;msg('Кодовое слово обновлено: '+v);}
+function updateLuck(v){S.luck=Math.max(1,Math.min(8,parseInt(v,10)||1));document.getElementById('lv').textContent='x'+S.luck;Object.keys(S.entries).forEach(function(name){if(S.entries[name].lucky)S.entries[name].tickets=S.luck;});renderEntries();}
+function togglePause(){S.paused=!S.paused;document.getElementById('pauseBtn').textContent=S.paused?'Продолжить':'Пауза';msg(S.paused?'Приём участников на паузе':'Приём участников продолжен');}
+function resetAll(){S.entries={};renderEntries();msg('Участники сброшены');}
+function clearChat(){document.getElementById('chat').innerHTML='';msg('Чат очищен');}
+function clearWinners(){S.winners=[];renderWinners();msg('История победителей очищена');}
+function copyEntries(){copyText(Object.keys(S.entries).join('\n')).catch(function(){msg('Не удалось скопировать участников');});}
+function copyWinners(){copyText(S.winners.join('\n')).catch(function(){msg('Не удалось скопировать победителей');});}
+function addDemoBots(){['magicgt_maloycser','turbofox','shadow','neonrider','cybercat','pixelduck','nightwolf'].forEach(register);}
+function publish(data){
+  const event = Object.assign({
+    time: Date.now(),
+    nonce: Math.random().toString(36).slice(2)
+  }, data);
+
+  if(bc) bc.postMessage(event);
+
+  try{
+    localStorage.setItem(
+      'lotto_maloycser_overlay_event',
+      JSON.stringify(event)
+    );
+  }catch{}
+
+  overlayEventRef.set(event).catch(err => {
+    msg('Firebase ошибка: ' + err.message);
+  });
+}
+function pickWinner(){if(S.picking)return;const ks=Object.keys(S.entries);if(!ks.length){msg('Нет участников для выбора победителя');return;}S.picking=true;const pool=[];ks.forEach(function(k){const count=Math.max(1,parseInt(S.entries[k].tickets,10)||1);for(let i=0;i<count;i++)pool.push(k);});const winner=pool[Math.floor(Math.random()*pool.length)];publish({type:'pick',winner:winner,pool:pool});setTimeout(function(){S.winners.push(winner);delete S.entries[winner];renderEntries();renderWinners();S.picking=false;},6200);}
+function copyObsSilent(){copyText(overlayUrl).then(function(){const b=document.getElementById('obsCopy'),o=b.textContent;b.classList.add('copied');b.textContent='Ссылка скопирована';setTimeout(function(){b.classList.remove('copied');b.textContent=o;},1100);}).catch(function(){msg('Не удалось скопировать OBS-ссылку');});}
+function toggleFocusMode(){const active=document.body.classList.toggle('focus-mode'),btn=document.getElementById('focusBtn');if(btn){btn.setAttribute('aria-pressed',String(active));const label=btn.querySelector('.fs-label');if(label)label.textContent=active?'Обычный':'Фокус';}if(active&&document.fullscreenEnabled&&!document.fullscreenElement){document.documentElement.requestFullscreen().catch(function(){});}else if(!active&&document.fullscreenElement){document.exitFullscreen().catch(function(){});}}
+document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement&&document.body.classList.contains('focus-mode')){document.body.classList.remove('focus-mode');const btn=document.getElementById('focusBtn');if(btn){btn.setAttribute('aria-pressed','false');const label=btn.querySelector('.fs-label');if(label)label.textContent='Фокус';}}});
+document.getElementById('kwi').addEventListener('keydown',function(e){if(e.key==='Enter')updateKw();});
+
+async function fetchId(){try{const r=await fetch('https://kick.com/api/v2/channels/'+encodeURIComponent(CHANNEL));if(!r.ok)return null;const d=await r.json();return d&&d.chatroom?d.chatroom.id:null;}catch(e){return null;}}
+function parseKickMessage(raw){try{const packet=JSON.parse(raw);if(packet.event==='pusher:connection_established')return null;if(packet.event==='App\\Events\\ChatMessageEvent'||packet.event==='App\\\\Events\\\\ChatMessageEvent'||String(packet.event).includes('ChatMessage')){const data=typeof packet.data==='string'?JSON.parse(packet.data):packet.data;const sender=data.sender||data.user||{};const name=sender.username||sender.name||data.username||'unknown';const text=data.content||data.message||'';return {name:name,text:text};}}catch(e){}return null;}
+async function connectKick(){const id=await fetchId();if(!id){setStatus(false,'Демо-режим');msg('Не удалось подключиться к Kick. Можно использовать демо-участников.');return;}setStatus(false,'Соединение...');try{const ws=new WebSocket('wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=7.6.0&flash=false');S.ws=ws;ws.onopen=function(){setStatus(true,'Онлайн');ws.send(JSON.stringify({event:'pusher:subscribe',data:{auth:'',channel:'chatrooms.'+id+'.v2'}}));msg('Подключено к чату Kick: '+CHANNEL);};ws.onmessage=function(ev){const m=parseKickMessage(ev.data);if(m&&m.text)processChat(m.name,m.text);};ws.onerror=function(){setStatus(false,'Ошибка');};ws.onclose=function(){setStatus(false,'Оффлайн');clearTimeout(S.reconnectTimer);S.reconnectTimer=setTimeout(connectKick,5000);};}catch(e){setStatus(false,'Ошибка');}}
+renderEntries();renderWinners();msg('Лотто-Бот запущен. Кодовое слово: '+S.kw);connectKick();
+</script>
+</body>
+</html>
